@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<title>Solo Rehab – Self-guided recovery</title>
+<style>
+:root{--bg:#f4f7f9;--card:#fff;--ink:#13233a;--mute:#5b6b7d;--acc:#0e8f84;--accd:#0a6a62;--acc2:#e3f4f2;--line:#dde5ec;--gold:#f5a524;--goldd:#c47d0a;--lock:#cfd8e0;--lockd:#b2bec9;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root:not([data-theme="light"]){color-scheme:light dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0c1624;--card:#13233a;--ink:#e8eef5;--mute:#9db0c4;--acc:#2fc4b2;--accd:#1f9c8d;--acc2:#12303a;--line:#213650;--lock:#223348;--lockd:#182638}}
+:root[data-theme="dark"]{--bg:#0c1624;--card:#13233a;--ink:#e8eef5;--mute:#9db0c4;--acc:#2fc4b2;--accd:#1f9c8d;--acc2:#12303a;--line:#213650;--lock:#223348;--lockd:#182638;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:520px;margin:0 auto;padding:0 14px 90px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);display:flex;justify-content:space-between;padding:10px 2px;font-weight:700}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:6}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px}
+.chip{flex:none;border:2px solid var(--line);background:var(--card);color:var(--ink);padding:7px 12px;border-radius:20px;font:inherit;font-weight:600;cursor:pointer}
+.chip.on{border-color:var(--acc);background:var(--acc2);color:var(--accd)}
+.gridc{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.ac{background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:18px;padding:14px;text-align:center;cursor:pointer}
+.ac:active{transform:translateY(2px)}.ae{font-size:2.4rem}.ac .btn{margin-top:10px;width:100%}
+.card{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+h2{font-size:1.1rem;margin:0 0 6px}.note{font-size:.88rem;color:var(--mute)}
+.btn{border:0;background:var(--acc);color:#fff;padding:12px 18px;border-radius:14px;font:inherit;font-weight:800;letter-spacing:.4px;text-transform:uppercase;box-shadow:0 4px 0 var(--accd);cursor:pointer;width:100%}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--accd)}
+.btn:disabled{background:var(--lock);box-shadow:0 4px 0 var(--lockd);color:var(--mute);cursor:default}
+.btn.sm{width:auto;padding:8px 14px;font-size:.8rem}
+.goal{height:12px;background:var(--acc2);border-radius:8px;overflow:hidden;margin:6px 0}.goal i{display:block;height:100%;background:var(--gold);transition:width .4s}
+.path{display:flex;flex-direction:column;align-items:center;gap:16px;padding:10px 0}
+.nw{text-align:center;width:110px}
+.nw:nth-child(4n+2){transform:translateX(-44px)}.nw:nth-child(4n+4){transform:translateX(44px)}
+.node{width:76px;height:76px;border-radius:50%;border:0;font-size:2rem;background:var(--acc);color:#fff;box-shadow:0 6px 0 var(--accd);cursor:pointer}
+.node.done{background:var(--gold);box-shadow:0 6px 0 var(--goldd)}
+.node.lock{background:var(--lock);box-shadow:0 6px 0 var(--lockd);cursor:default;filter:grayscale(1)}
+.node.cur{animation:pul 1.6s infinite}
+@keyframes pul{50%{transform:scale(1.08)}}
+.nw small{display:block;font-weight:700;margin-top:6px;font-size:.78rem}
+.bnav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:2px solid var(--line);display:flex;justify-content:center;gap:4px;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px));z-index:7}
+.bnav button{flex:1;max-width:160px;border:0;background:none;color:var(--mute);font:inherit;font-weight:700;padding:6px;border-radius:10px;cursor:pointer}
+.bnav button.on{color:var(--accd);background:var(--acc2)}
+.hide{display:none}
+.dt{aspect-ratio:1;border:0;border-radius:12px;font:inherit;font-weight:800;background:var(--lock);color:var(--mute);cursor:pointer}.dt.d{background:var(--gold);color:#fff}.dt.c{background:var(--acc);color:#fff}.dt.s{outline:3px solid var(--ink)}
+.bnav button{font-size:.78rem}
+#lesson{position:fixed;inset:0;background:var(--bg);z-index:20;overflow:auto;padding:calc(14px + env(safe-area-inset-top,0px)) 16px calc(14px + env(safe-area-inset-bottom,0px))}
+.lw{max-width:520px;margin:0 auto}
+.lh{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.lh button{border:0;background:none;color:var(--mute);font-size:1.4rem;cursor:pointer}
+.opt{display:block;width:100%;text-align:left;margin:10px 0;padding:14px;border:2px solid var(--line);border-bottom-width:4px;border-radius:14px;background:var(--card);color:var(--ink);font:inherit;cursor:pointer}
+.opt.sel{border-color:var(--acc);background:var(--acc2)}
+.fb{padding:12px;border-radius:12px;margin:12px 0;font-weight:600}
+.fb.ok{background:var(--acc2);color:var(--accd)}.fb.no{background:var(--card);border:2px solid var(--gold)}
+label{display:block;font-weight:700;font-size:.9rem;margin:12px 0 4px}
+input[type=text],textarea{width:100%;padding:11px;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit}
+#orb{width:140px;height:140px;border-radius:50%;margin:16px auto;background:radial-gradient(circle,var(--acc),var(--acc2));display:grid;place-items:center;color:#fff;font-weight:700;transition:transform 4s ease-in-out;transform:scale(.6)}
+.big{font-size:2rem;font-weight:800;color:var(--accd)}
+body:not(.inapp) main,body:not(.inapp) .bnav{display:none}
+body.inapp #site{display:none}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+.sh{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--bg);border-bottom:2px solid var(--line)}
+.shi{max-width:1040px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:10px 16px;position:relative}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:1.25rem;color:var(--ink);text-decoration:none;cursor:pointer}.lg{width:36px;height:36px;flex:none}.logo b{color:var(--accd)}
+#mn{display:flex;gap:18px;margin-left:auto}
+#mn a,.ft a{cursor:pointer;color:var(--ink);text-decoration:none;font-weight:600;font-size:.92rem}
+.hb{display:flex;gap:8px}
+.sbtn{display:inline-block;border:0;background:var(--acc);color:#fff;padding:11px 18px;border-radius:12px;font:inherit;font-weight:800;box-shadow:0 4px 0 var(--accd);cursor:pointer;text-decoration:none}
+.sbtn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--accd)}
+.sbtn.o{background:var(--card);color:var(--accd);border:2px solid var(--line);box-shadow:0 4px 0 var(--line)}
+.burger{display:none;border:0;background:none;color:var(--ink);font-size:1.5rem;cursor:pointer}
+.hero{background:linear-gradient(160deg,var(--acc2),var(--bg));padding:36px 0 44px}
+.two{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center}
+.hero h1{font-size:clamp(1.9rem,5vw,3rem);line-height:1.15;margin:12px 0}
+.tag{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:4px 12px;font-weight:700;font-size:.82rem;color:var(--accd)}
+.lead{font-size:1.1rem;color:var(--mute)}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0}
+.sec{padding:44px 0}.alt{background:var(--acc2)}
+.st{font-size:1.6rem;margin:0 0 16px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.fi{font-size:2rem}
+.stars{color:var(--gold);letter-spacing:2px}
+.rsum{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+details{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px 14px;margin:10px 0}
+summary{font-weight:700;cursor:pointer}
+.help{background:var(--card);border-top:2px solid var(--line);padding:16px 0}
+.help a{color:var(--accd);font-weight:700}
+.ft{background:var(--card);border-top:2px solid var(--line);padding:30px 0 16px}
+.fg{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:20px}
+.ft b{display:block;margin-bottom:6px}.ft a{display:block;margin:7px 0;color:var(--mute)}
+.fb2{margin-top:20px;font-size:.82rem;color:var(--mute)}
+#fr{list-style:none;padding:0;margin:6px 0}#fr li{padding:7px 10px;background:var(--bg);border-radius:8px;margin:3px 0;cursor:pointer;font-size:.9rem}
+.md{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50;display:grid;place-items:center;padding:16px}
+.md.hide{display:none}
+.mc{background:var(--card);border-radius:16px;padding:18px;max-width:420px;width:100%;max-height:85vh;overflow:auto}
+@media(max-width:760px){.two,.fg{grid-template-columns:1fr}.burger{display:block;margin-left:auto}.hb{margin-left:0}.hide-m{display:none}
+#mn{display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg);flex-direction:column;padding:12px 16px;border-bottom:2px solid var(--line);gap:12px}#mn.open{display:flex}}
+
+body{font-family:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+h1,h2,h3{letter-spacing:-.015em}
+.card{border-width:1px;border-radius:18px;box-shadow:0 2px 12px rgba(19,35,58,.07)}
+.hero{background:radial-gradient(900px 420px at 85% 0%,rgba(47,196,178,.3),transparent 60%),linear-gradient(160deg,#0d1f38,#12385a);color:#fff;padding:46px 0 58px}
+.hero h1{color:#fff}.hero .lead,.hero .note{color:rgba(255,255,255,.8)}
+.hero .tag{background:rgba(255,255,255,.12);border:0;color:#ffd27a}
+.sbtn.gold{background:var(--gold);color:#13233a;box-shadow:0 4px 0 var(--goldd)}
+.hero .sbtn.o{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.4);box-shadow:none}
+.trust{background:var(--card);border-bottom:1px solid var(--line)}
+.tr{display:flex;gap:10px 22px;flex-wrap:wrap;justify-content:center;padding:14px 16px;font-weight:700;font-size:.9rem;color:var(--mute)}
+.cont{background:linear-gradient(135deg,var(--accd),var(--acc));color:#fff;border:0}
+.cont h2{color:#fff}.cont .btn{background:var(--gold);color:#13233a;box-shadow:0 4px 0 var(--goldd)}
+</style>
+</head>
+<body>
+<div id="site"><svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><linearGradient id="lgG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2fc4b2"/><stop offset="1" stop-color="#0b756b"/></linearGradient></defs></svg>
+<header class="sh"><div class="shi">
+<a class="logo" href="#" data-go="s-top"><svg class="lg" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="url(#lgG)"/><circle cx="47" cy="19" r="6" fill="#f2b632"/><path d="M0 50Q20 36 42 44T64 40V64H0Z" fill="#fff" fill-opacity=".28"/><circle cx="25" cy="22" r="6" fill="#fff"/><path d="M17 47Q17 31 25 31Q33 31 33 47Z" fill="#fff"/><path d="M18 34L11 25M32 34L39 25" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/></svg><span><b>Solo</b> Rehab</span></a>
+<nav id="mn"><a href="#" data-go="s-features">Features</a><a href="#" data-go="s-how">How it works</a><a href="#" data-go="s-stories">Stories</a><a href="#" data-go="s-download">Get the app</a><a href="#" data-go="s-faq">FAQ</a></nav>
+<div class="hb"><button class="sbtn o hide-m" id="hAcct" data-acct="Create your account">Create account</button><button class="sbtn" data-start>Start free</button></div>
+<button class="burger" id="bg" aria-label="Menu">☰</button>
+</div></header>
+
+<section class="hero" id="s-top"><div class="wrap two">
+<div><span class="tag">Self-guided recovery, with support when you need it</span>
+<h1>Your recovery. Your pace. Solo never means alone.</h1>
+<p class="lead">Take charge with a guided 60-day path with daily lessons, simple exercises and urge-rescue tools for nicotine, alcohol, gambling, screen time, porn and other habits.</p>
+<div class="cta"><button class="sbtn gold" data-start>Start free</button><button class="sbtn o" data-dl>⬇ Download the app, free</button></div>
+<p class="note">No card needed. Private by design: your progress stays on your device.</p></div>
+<div id="art" role="img" aria-label="A support group sitting in a circle"></div>
+</div></section>
+
+<section class="trust"><div class="wrap tr"><span>🔒 Private by design</span><span>📘 60 guided lessons</span><span>🧰 Urge rescue tools</span><span>💚 Free to start</span></div></section>
+<section class="sec" id="s-features"><div class="wrap"><h2 class="st">Everything you need for the first 60 days</h2><div class="cards">
+<div class="card"><div class="fi">📘</div><h3>60 daily lessons</h3><p class="note">One short lesson and quiz a day, from understanding triggers to relapse-proofing.</p></div>
+<div class="card"><div class="fi">✅</div><h3>Daily exercises</h3><p class="note">A small, doable action every day that turns what you learn into habit.</p></div>
+<div class="card"><div class="fi">🆘</div><h3>Urge rescue tools</h3><p class="note">Guided breathing and 5-4-3-2-1 grounding for the moment a craving hits.</p></div>
+<div class="card"><div class="fi">🔥</div><h3>Streaks and milestones</h3><p class="note">Track free days, earn XP and celebrate every step forward.</p></div>
+<div class="card"><div class="fi">⛰️</div><h3>Your Solid Ground plan</h3><p class="note">Write your reasons, triggers and supporters once, and see them when you need them.</p></div>
+<div class="card"><div class="fi">🔒</div><h3>Private by design</h3><p class="note">No account needed. Your progress is saved on your own device.</p></div>
+</div></div></section>
+
+<section class="sec alt" id="s-how"><div class="wrap"><h2 class="st">How it works</h2><div class="cards">
+<div class="card"><div class="fi">1️⃣</div><h3>Pick your path</h3><p class="note">Choose nicotine, alcohol, gambling, phone and gaming, porn or another habit.</p></div>
+<div class="card"><div class="fi">2️⃣</div><h3>Take one lesson a day</h3><p class="note">Learn, answer one question, then do the day’s exercise.</p></div>
+<div class="card"><div class="fi">3️⃣</div><h3>Build solid ground</h3><p class="note">By Day 60 you have a plan, supporters and habits that hold.</p></div>
+</div></div></section>
+
+<section class="sec" id="s-keep"><div class="wrap"><h2 class="st">Built to help you keep going</h2><div class="cards">
+<div class="card"><div class="fi">🛡️</div><h3>Streak shield</h3><p class="note">Miss a day and your shield protects your streak once, so one hard day doesn’t erase weeks of progress.</p></div>
+<div class="card"><div class="fi">💬</div><h3>Your own “why”</h3><p class="note">The reason you wrote for yourself appears when you finish a lesson, right when motivation matters.</p></div>
+<div class="card"><div class="fi">🏅</div><h3>Badges and levels</h3><p class="note">Small wins add up. Earn badges at your first lesson, 3 and 7-day streaks, Day 30 and Day 60.</p></div>
+<div class="card"><div class="fi">🧭</div><h3>Always a next step</h3><p class="note">Open the app and one clear button takes you straight to today’s lesson.</p></div>
+</div></div></section>
+<section class="sec" id="s-stories"><div class="wrap"><h2 class="st">Stories and ratings</h2>
+<div class="rsum"><span class="big" id="avg">–</span><span class="stars" id="avs"></span><span class="note" id="cnt"></span></div>
+<p class="note">Sample reviews are shown while Solo Rehab is new. Replace them with real user reviews before launch.</p>
+<div class="cards" id="tl"></div>
+<div class="card" style="margin-top:14px"><h3>Leave a review</h3>
+<input type="text" id="rn" placeholder="Your first name"><div id="rst" class="stars" style="font-size:1.6rem;margin:8px 0"></div>
+<textarea id="rt" rows="2" placeholder="How has Solo Rehab helped you?"></textarea><br><br><button class="sbtn" id="rsub">Submit review</button></div>
+</div></section>
+
+<section class="sec alt" id="s-download"><div class="wrap"><h2 class="st">Take Solo Rehab with you</h2>
+<p class="lead">Install Solo Rehab on your phone’s home screen for one-tap, full-screen access. It’s free.</p>
+<div class="cta"><button class="sbtn" data-dl>⬇ Download the app, free</button><button class="sbtn o" data-start>Start free in your browser</button></div></div></section>
+
+<section class="sec" id="s-faq"><div class="wrap"><h2 class="st">Questions</h2>
+<details><summary>Is Solo Rehab free?</summary><p class="note">Yes. Right now every lesson, exercise and tool is free to use.</p></details>
+<details><summary>Is my data private?</summary><p class="note">Your progress is stored in your own browser or device. We don’t collect it.</p></details>
+<details><summary>Does it replace treatment?</summary><p class="note">No. Solo Rehab is a self-help tool that works best alongside support, counseling or medical care.</p></details>
+<details><summary>What if I slip?</summary><p class="note">A slip isn’t failure. Restart your counter, tell someone, and keep going. Your lessons stay with you.</p></details>
+<details><summary>Can I stop drinking suddenly?</summary><p class="note">If you drink heavily, talk to a doctor first. Stopping suddenly can be dangerous.</p></details>
+</div></section>
+
+<section class="help" id="s-help"><div class="wrap"><b>Need help right now?</b> If you are in danger or in crisis, contact your local emergency number. To find a helpline in your country, visit <a href="https://findahelpline.com" target="_blank" rel="noopener noreferrer">findahelpline.com</a>.</div></section>
+
+<footer class="ft"><div class="wrap fg">
+<div><a class="logo" href="#" data-go="s-top"><svg class="lg" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="16" fill="url(#lgG)"/><circle cx="47" cy="19" r="6" fill="#f2b632"/><path d="M0 50Q20 36 42 44T64 40V64H0Z" fill="#fff" fill-opacity=".28"/><circle cx="25" cy="22" r="6" fill="#fff"/><path d="M17 47Q17 31 25 31Q33 31 33 47Z" fill="#fff"/><path d="M18 34L11 25M32 34L39 25" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/></svg><span><b>Solo</b> Rehab</span></a><p class="note">A free, private companion for people rebuilding their lives after addiction.</p>
+<input type="text" id="fs" placeholder="Search Solo Rehab…" aria-label="Search"><ul id="fr"></ul></div>
+<div><b>Quick links</b><a href="#" data-go="s-features">Features</a><a href="#" data-go="s-how">How it works</a><a href="#" data-go="s-stories">Stories and ratings</a><a href="#" data-go="s-download">Get the app</a><a href="#" data-go="s-faq">FAQ</a></div>
+<div><b>Support</b><a href="#" data-go="s-help">Help and crisis support</a><a href="#" data-info="privacy">Privacy</a><a href="#" data-info="medical">Not medical advice</a></div>
+<div><b>Join</b><a href="#" data-acct="Sign up for updates">Sign up for updates</a><a href="#" data-acct="Create your account">Create account</a><br><button class="sbtn" data-start>Start free</button></div>
+</div><div class="wrap fb2">© 2026 Solo Rehab. Solo Rehab is a self-help tool and does not replace professional treatment.</div></footer>
+</div>
+<div id="md" class="md hide"><div class="mc" id="mc"></div></div>
+<main>
+<div class="top"><span id="tS">🔥 0</span><span id="tX">⭐ 0 XP · Lv 1</span><span id="tD"></span></div>
+<section id="home"><button class="chip" id="toSite">← Website</button><h2 style="font-size:1.3rem;margin:6px 0 4px">What are you recovering from?</h2><p class="note">Tap a card to open your path, or press Start tracking.</p><div id="cont"></div><div id="tb"></div><div class="gridc" id="gridc"></div></section>
+<section id="learn" class="hide">
+<button class="btn sm" id="back" style="background:none;color:var(--mute);box-shadow:none;border:2px solid var(--line);margin:4px 0 8px">← All addictions</button> <b id="ttl" style="margin-left:6px"></b>
+<div class="card" id="clean"></div>
+<div class="card"><b>Daily goal</b> <span class="note" id="gtxt"></span><div class="goal"><i id="gbar"></i></div></div>
+<div class="path" id="path"></div>
+</section>
+<section id="rescue" class="hide">
+<div class="card"><h2>Breathe through the urge</h2><p class="note">Urges peak, then fade. Ride the wave: in 4, hold 4, out 6.</p>
+<div id="orb">Ready</div><button class="btn" id="bBtn">Start breathing</button></div>
+<div class="card"><h2>5-4-3-2-1 grounding</h2><p id="gStep" style="font-size:1.15rem;font-weight:700;min-height:56px">Bring yourself back to the present.</p><button class="btn" id="gBtn">Begin</button></div>
+<div class="card"><h2>Your reason</h2><p id="whyShow" class="big" style="font-size:1.2rem">Finish the Solid Ground plan to see your reason here.</p></div>
+<div class="card note">If you feel unsafe, or alcohol withdrawal is severe (shaking, confusion, seizures), contact local emergency services or a medical professional right away. Stopping heavy drinking suddenly can be dangerous without medical support.</div>
+</section>
+<section id="me" class="hide"></section>
+<section id="pay" class="hide"></section>
+</main>
+<div class="bnav" id="bnav"><button data-t="learn" class="on">🗺️ Learn</button><button data-t="rescue">🆘 Rescue</button><button data-t="me">👤 Me</button><button data-t="pay">💚 Support</button></div>
+<div id="lesson" class="hide"><div class="lw" id="lw"></div></div>
+
+<script>
+const TR={smoke:["🚬","Nicotine"],alc:["🍺","Alcohol"],gamb:["🎲","Gambling"],screen:["📱","Phone & gaming"],porn:["🔒","Porn"],other:["➕","Other"]};
+let LS=[];
+let S={view:"home",shield:1,p60:{},trial:Date.now(),premium:false,track:"smoke",xp:0,streak:0,last:"",day:"",dayXp:0,done:{},clean:{},plan:{}};
+try{const r=localStorage.getItem("steady2");if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+const $=id=>document.getElementById(id);
+function save(){try{localStorage.setItem("steady2",JSON.stringify(S))}catch(e){}}
+const today=()=>new Date().toISOString().slice(0,10);
+function rollDay(){if(S.day!==today()){S.day=today();S.dayXp=0}}
+function addXp(n){rollDay();S.xp+=n;S.dayXp+=n;
+ if(S.last!==today()){const gap=S.last?Math.round((Date.parse(today())-Date.parse(S.last))/864e5):99;if(gap===1)S.streak++;else if(gap===2&&S.shield>0){S.shield--;S.streak++}else S.streak=1;if(S.streak%7===0&&S.shield<2)S.shield++;S.last=today()}save()}
+
+function hdr(){rollDay();$("tS").textContent="🔥 "+S.streak+(S.shield?" 🛡️"+S.shield:"");$("tD").innerHTML=MARK;$("tX").textContent="⭐ "+S.xp+" XP · Lv "+(Math.floor(S.xp/100)+1)}
+function home(){
+ hdr();tb();cont();const g=$("gridc");g.innerHTML="";
+ Object.keys(TR).forEach(k=>{const cl=S.clean[k],dn=S.done[k]||0,c=document.createElement("div");c.className="ac";
+  c.innerHTML='<div class="ae">'+TR[k][0]+'</div><b>'+TR[k][1]+'</b><div class="note">'+(cl?Math.floor((Date.now()-cl)/864e5)+" days free":"Not started")+'</div><div class="note">'+dn+"/"+LS.length+' lessons</div>';
+  const b=document.createElement("button");b.className="btn sm";b.textContent=cl?"Open":"Start tracking";
+  b.onclick=e=>{e.stopPropagation();if(!S.clean[k])S.clean[k]=Date.now();go(k)};
+  c.onclick=()=>go(k);c.appendChild(b);g.appendChild(c)});
+}
+function why(){const p=S.plan[S.track];return p&&p.why||""}
+function cont(){const n=S.done[S.track]||0,c=$("cont");
+ if(n<60&&(S.clean[S.track]||n>0)){const l=LS[n];c.innerHTML='<div class="card cont"><div style="opacity:.9;font-size:.88rem">'+(S.streak>0&&S.last!==today()?"🔥 Your "+S.streak+"-day streak is waiting for today’s lesson":"Up next · "+TR[S.track][1])+'</div><h2 style="font-size:1.2rem;margin:4px 0 12px">Day '+(n+1)+': '+l.t+'</h2><button class="btn" id="cbt">Continue</button></div>';$("cbt").onclick=()=>{go(S.track);open(n)}}else c.innerHTML=""}
+function go(k){S.track=k;S.view="track";save();showTab("learn")}
+function learn(){
+ hdr();$("ttl").textContent=TR[S.track][0]+" "+TR[S.track][1];
+ const cl=S.clean[S.track],cd=$("clean");
+ if(cl){const d=Math.floor((Date.now()-cl)/864e5);cd.innerHTML='<span class="big">'+d+'</span> days free<br><button class="btn sm" id="slip" style="background:none;color:var(--mute);box-shadow:none;border:2px solid var(--line);margin-top:8px">I slipped</button>';
+  $("slip").onclick=()=>{if(confirm("A slip doesn’t erase what you’ve learned. Restart the counter?")){S.clean[S.track]=Date.now();save();learn()}}}
+ else{cd.innerHTML='Ready when you are.<br><button class="btn sm" id="st" style="margin-top:8px">Start counting free days</button>';
+  $("st").onclick=()=>{S.clean[S.track]=Date.now();save();learn()}}
+ $("gtxt").textContent=Math.min(S.dayXp,30)+" / 30 XP today";$("gbar").style.width=Math.min(100,S.dayXp/30*100)+"%";
+ const dn=S.done[S.track]||0,p=$("path");p.innerHTML="";
+ LS.forEach((l,i)=>{if(i%7===0){const hd=document.createElement("div");hd.style.cssText="font-weight:800;margin-top:12px;color:var(--accd)";hd.textContent="Stage "+(i/7+1)+": "+WK[Math.min(8,i/7)];p.appendChild(hd)}const w=document.createElement("div");w.className="nw";w.style.transform="translateX("+[0,-44,0,44][i%4]+"px)";
+  const b=document.createElement("button");b.className="node"+(i<dn?" done":i===dn?" cur":" lock");
+  const lk=i>=2&&i>=dn&&!isPrem();b.textContent=i<dn?"✓":lk?"🔒":l.e;if(i<=dn)b.onclick=()=>{if(lk)showTab("pay");else open(i)};
+  w.appendChild(b);w.insertAdjacentHTML("beforeend","<small>"+l.t+"</small>");p.appendChild(w)});
+}
+/* lesson player */
+let L=null;
+function open(i){L={i:i,ph:0,sel:null,chk:false,ok:0};$("lesson").classList.remove("hide");step()}
+function close(){$("lesson").classList.add("hide");learn();me()}
+function rp(t){return t.replace(/\{h\}/g,HN[S.track])}
+function step(){
+ const les=LS[L.i],w=$("lw");
+ if(les.plan)return planView();
+ const hd='<div class="lh"><button id="x">✕</button><div class="goal" style="flex:1"><i style="width:'+(L.ph/3*100)+'%"></i></div></div><div class="note">Day '+(L.i+1)+' of 60 · '+WK[L.i<56?Math.floor(L.i/7):8]+'</div>';
+ if(L.ph===0){w.innerHTML=hd+'<h2 style="font-size:1.4rem">'+les.t+'</h2><p style="font-size:1.1rem">'+rp(les.idea)+'</p><button class="btn" id="nx">Continue</button>';$("nx").onclick=()=>{L.ph=1;step()}}
+ else if(L.ph===1){
+  w.innerHTML=hd+'<h2 style="font-size:1.3rem">'+rp(les.q)+'</h2>';
+  les.o.forEach((t,k)=>{const b=document.createElement("button");b.className="opt"+(L.sel===k?" sel":"");b.textContent=rp(t);b.onclick=()=>{if(L.chk)return;L.sel=k;step()};w.appendChild(b)});
+  if(L.chk){const ok=L.sel===les.a,f=document.createElement("div");f.className="fb "+(ok?"ok":"no");f.textContent=(ok?"Nice! ":"Good try. ")+rp(les.idea);w.appendChild(f)}
+  const go=document.createElement("button");go.className="btn";go.disabled=L.sel===null;go.textContent=L.chk?"Continue":"Check";
+  go.onclick=()=>{if(!L.chk){L.chk=true;if(L.sel===les.a)L.ok=1;step()}else{L.ph=2;step()}};w.appendChild(go)}
+ else{w.innerHTML=hd+'<h2>Today’s exercise</h2><p style="font-size:1.2rem;font-weight:700">'+rp(D60[L.i])+'</p><p class="note">Do it today, then tap below.</p><button class="btn" id="nx">I’ll do it today</button>';$("nx").onclick=()=>finish(les.t)}
+ $("x").onclick=leave;
+}
+function leave(){const w=$("lw");w.innerHTML='<div style="text-align:center;padding-top:70px"><div style="font-size:3.5rem">🌱</div><h2>Leave this lesson?</h2><p class="note">You’re closer than you think. Finishing today keeps your streak alive'+(why()?' — and remember why you started: “'+esc(why())+'”':"")+'.</p><button class="btn" id="kp">Keep going</button><p><button class="btn sm" id="lv" style="background:none;color:var(--mute);box-shadow:none;border:2px solid var(--line)">Leave anyway</button></p></div>';$("kp").onclick=step;$("lv").onclick=close}
+function finish(t){
+ const xp=15+L.ok*5;addXp(xp);if((S.done[S.track]||0)<=L.i)S.done[S.track]=L.i+1;save();
+ $("lw").innerHTML='<div style="text-align:center;padding-top:60px"><div style="font-size:4rem">'+(L.i===59?"🏆":"🎉")+'</div><h2 style="font-size:1.4rem">'+(L.i===59?"60 days complete!":"Day "+(L.i+1)+" complete!")+'</h2><p class="note">'+t+'</p>'+(why()?'<p style="font-weight:700">Remember why: “'+esc(why())+'”</p>':"")+'<p class="big">+'+xp+' XP</p>'+(L.i<59?'<p class="note">Next: Day '+(L.i+2)+' · '+LS[L.i+1].t+'</p>':"")+'<button class="btn" id="c">Continue</button></div>';
+ $("c").onclick=close;
+}
+function planView(){
+ const P=S.plan[S.track]||{};
+ $("lw").innerHTML='<div class="lh"><button id="x">✕</button><h2 style="margin:0">Build your Solid Ground plan</h2></div><p class="note">Decide now, while you’re calm. This is your footing when urges come.</p>'+
+ [["why","Why am I doing this?"],["trig","My top 3 triggers"],["swap","What I’ll do instead (3 actions)"],["who","Who I’ll call or text"],["sos","If I slip or an urge is huge, I will…"]].map(f=>'<label>'+f[1]+'</label><textarea rows="2" id="p_'+f[0]+'">'+(P[f[0]]||"")+'</textarea>').join("")+'<br><button class="btn" id="ps">Lay solid ground</button>';
+ $("x").onclick=close;
+ $("ps").onclick=()=>{const o={};["why","trig","swap","who","sos"].forEach(k=>o[k]=$("p_"+k).value.trim());
+  if(!o.why||!o.swap){alert("Add at least your reason and one replacement action.");return}
+  S.plan[S.track]=o;addXp(50);if((S.done[S.track]||0)<=L.i)S.done[S.track]=L.i+1;save();
+  $("lw").innerHTML='<div style="text-align:center;padding-top:50px"><div style="font-size:4rem">⛰️</div><h2 style="font-size:1.4rem">You’ve laid solid ground.</h2><p>Recovery isn’t a finish line. It’s daily steady steps, and you now have a plan under your feet.</p><p class="big">+50 XP</p><button class="btn" id="c">See my plan</button></div>';
+  $("c").onclick=()=>{close();showTab("me")}};
+}
+/* me */
+function me(){
+ const P=S.plan[S.track],done=S.done[S.track]||0;
+ let h='<div class="card"><h2>'+TR[S.track][0]+" "+TR[S.track][1]+'</h2><p class="note">'+done+" of "+LS.length+' lessons done · '+S.xp+' XP · '+S.streak+'-day learning streak</p></div>';
+ const bd=[["🌱","First lesson",done>=1],["🔥","3-day streak",S.streak>=3],["⚡","7-day streak",S.streak>=7],["⛰️","Plan built",!!P],["🏅","Day 30",done>=30],["🏆","Day 60",done>=60]];
+ h+='<div class="card"><h2>Badges</h2><div style="display:flex;gap:10px;flex-wrap:wrap">'+bd.map(b=>'<div style="text-align:center;width:80px;opacity:'+(b[2]?1:.35)+'"><div style="font-size:2rem">'+b[0]+'</div><small>'+b[1]+'</small></div>').join("")+'</div><p class="note" style="margin-bottom:0">🛡️ Streak shields: '+S.shield+'. One protects your streak if you miss a day.</p></div>';
+ h+=P?'<div class="card"><h2>⛰️ My Solid Ground plan</h2>'+[["Why","why"],["Triggers","trig"],["Instead I’ll","swap"],["I’ll reach out to","who"],["If I slip","sos"]].map(f=>P[f[1]]?'<p><b>'+f[0]+':</b> '+esc(P[f[1]])+'</p>':"").join("")+'</div>':'<div class="card note">Your Solid Ground plan is built on Day 7. Keep going!</div>';
+ h+=P?'<button class="btn sm" id="ep" style="margin:0 8px 12px 0">Edit plan</button>':"";
+ h+='<button class="btn sm" id="rs" style="background:none;color:var(--mute);box-shadow:none;border:2px solid var(--line)">Reset all data</button>';
+ $("me").innerHTML=h;if(P)$("ep").onclick=()=>open(6);$("rs").onclick=()=>{if(confirm("Erase all progress?")){try{localStorage.removeItem("steady2")}catch(e){}location.reload()}};
+ const w=S.plan[S.track];$("whyShow").textContent=w&&w.why?"“"+w.why+"”":"Finish the Solid Ground plan to see your reason here.";
+}
+function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function showTab(t){const v=t==="learn"?(S.view==="track"?"learn":"home"):t;
+ ["home","learn","rescue","me","pay"].forEach(s=>$(s).classList.toggle("hide",s!==v));
+ document.querySelectorAll("#bnav button").forEach(b=>b.classList.toggle("on",b.dataset.t===t));
+ if(v==="home")home();if(v==="learn")learn();if(v==="pay")pay();me()}
+$("bnav").onclick=e=>{if(e.target.dataset.t)showTab(e.target.dataset.t)};
+/* rescue */
+let bT=null;
+$("bBtn").onclick=()=>{const o=$("orb"),b=$("bBtn");
+ if(bT){clearTimeout(bT);bT=null;o.style.transform="scale(.6)";o.textContent="Ready";b.textContent="Start breathing";return}
+ b.textContent="Stop";const ph=[["Breathe in",4000,1],["Hold",4000,1],["Breathe out",6000,.6]];let i=0;
+ (function s(){const p=ph[i%3];o.textContent=p[0];o.style.transitionDuration=p[1]+"ms";o.style.transform="scale("+p[2]+")";i++;bT=setTimeout(s,p[1])})()};
+const GR=["Name 5 things you can see.","Notice 4 things you can touch.","Listen for 3 things you can hear.","Find 2 things you can smell.","Take 1 slow breath. You’re here, and you’re safe."];let gi=-1;
+$("gBtn").onclick=()=>{gi++;if(gi>=GR.length){gi=-1;$("gStep").textContent="Well done. Notice how you feel now.";$("gBtn").textContent="Again";addXp(5);hdr();return}
+ $("gStep").textContent=GR[gi];$("gBtn").textContent=gi===GR.length-1?"Finish":"Next"};
+const MARK='<svg viewBox="0 0 64 64" style="width:30px;height:30px;display:block"><rect width="64" height="64" rx="16" fill="#0e8f84"/><circle cx="47" cy="19" r="6" fill="#f5a524"/><path d="M0 50Q20 36 42 44T64 40V64H0Z" fill="#fff" fill-opacity=".28"/><circle cx="25" cy="22" r="6" fill="#fff"/><path d="M17 47Q17 31 25 31Q33 31 33 47Z" fill="#fff"/><path d="M18 34L11 25M32 34L39 25" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/></svg>';
+const PAYWALL=false,PRICE="$9.90",TRIAL=3,ACCESS_CODE="STDY-4K7Q";
+function trialLeft(){return Math.max(0,Math.ceil(TRIAL-(Date.now()-S.trial)/864e5))}
+function isPrem(){return !PAYWALL||S.premium||trialLeft()>0}
+function tb(){const e=$("tb");if(!PAYWALL){e.innerHTML="";return}let m,c=true;
+ if(S.premium)m="✅ Solo Rehab Plus is active. Thank you!";
+ else if(trialLeft()>0)m="🎁 Free trial: "+trialLeft()+" day"+(trialLeft()>1?"s":"")+" left, then "+PRICE+"/month.";
+ else{m="Your free trial has ended. Rescue tools, tracking, the first 2 lessons and the first 7 days stay free.";c=false}
+ e.innerHTML='<div class="card" style="background:var(--acc2)"><b>'+m+'</b>'+(S.premium?'':'<br><button class="btn sm" id="upg" style="margin-top:8px">'+(c?'See plans':'Unlock Solo Rehab Plus')+'</button>')+'</div>';
+ if(!S.premium)$("upg").onclick=()=>showTab("pay")}
+const HN={smoke:"smoking",alc:"drinking",gamb:"gambling",screen:"screen use",porn:"porn use",other:"this habit"};
+const WK=["Commit & clear","Know your triggers","Body & sleep","Thoughts & feelings","Fill your time","People & support","Money, time & purpose","Relapse-proofing","Looking forward"];
+const D60=[
+"Write 3 sentences on why you’re stopping {h} for good.",
+"Tell one trusted person you’re starting today.",
+"Remove or block 3 cues linked to {h}: apps, contacts, items or places.",
+"Log every urge today: the time, what happened, and its strength from 0 to 10.",
+"Do 4-4-6 breathing for 3 minutes, twice today.",
+"Body basics: drink water, eat a real meal, and walk for 15 minutes.",
+"Week review: write what was hardest and what helped most.",
+"List your top 5 triggers: people, places, feelings and times.",
+"Pick your riskiest trigger and write a plan B for it.",
+"Do a HALT check 3 times today: hungry, angry, lonely, tired?",
+"Change one routine tied to {h}: a route, a seat or a time.",
+"Urge surfing: sit with one urge for 10 minutes without acting. Watch it rise and fall.",
+"Write a letter to {h}: what it gave you and what it took.",
+"Rest day: do one thing you enjoy and note your mood.",
+"Set a fixed bedtime tonight and keep screens off for 30 minutes before it.",
+"Move for 20 minutes: walk, dance, stretch or run.",
+"Eat 3 balanced meals today and go easy on sugar and caffeine.",
+"Do a 5-minute body scan before bed, noticing tension from head to toe.",
+"Take a 10-minute walk in daylight and notice what’s around you.",
+"Tidy one space for 10 minutes. A clear space calms the mind.",
+"Week review: rate sleep, energy and mood from 1 to 10 and compare with Day 1.",
+"Catch one thought like “just once won’t hurt” and write a truthful reply to it.",
+"Write 3 harsh thoughts about yourself and rewrite each one kindly.",
+"Name your feeling out loud 3 times today before you act on anything.",
+"Write the full story of what happens after one episode of {h}, step by step to the end.",
+"Use 5-4-3-2-1 grounding (Rescue tab) at a stressful moment.",
+"Speak to yourself today the way you’d speak to a close friend.",
+"Week review: which thinking traps showed up most?",
+"Choose 3 replacement activities for your riskiest hours.",
+"Do one of them for 20 minutes during a high-risk time.",
+"Learn something new for 15 minutes: a skill, a song, a language.",
+"Do one small act of kindness for someone.",
+"Plan this weekend hour by hour so there are no empty gaps.",
+"Make something today: write, draw, cook or build.",
+"Reward yourself with a healthy treat for 5 weeks of effort.",
+"Contact a supportive friend or relative just to talk.",
+"Find a local support group or counselor and save their contact details.",
+"Share one real struggle with someone you trust.",
+"Set one boundary with a person or place that pulls you back.",
+"Thank someone who has supported you.",
+"Spend time today with people who don’t do {h}.",
+"Week review: write your 3 go-to supports and save their numbers.",
+"Work out what {h} has cost you in money, time and energy.",
+"Decide what you’ll do with the money and time you’re getting back.",
+"Set one goal for the next 3 months.",
+"Break that goal into 3 small steps and do step one.",
+"Write down the 3 values that matter most to you.",
+"Finish one task you’ve been avoiding.",
+"Week review: how is your life different from Day 1?",
+"List your early warning signs of relapse: moods, habits and thoughts.",
+"Write what you’ll do in the first 10 minutes after a slip: tell someone, restart, no shame.",
+"Rehearse saying “No thanks, I’m done with that” out loud 3 times.",
+"Plan for one risky event or time ahead: payday, a party, a lonely weekend.",
+"Update your Solid Ground plan on the Learn path.",
+"Spend 3 minutes picturing yourself handling a strong urge calmly.",
+"Week review: write your biggest win and your biggest current risk.",
+"Write a letter to yourself one year from now.",
+"Plan a healthy way to celebrate Day 60.",
+"Write what you’d tell someone starting Day 1.",
+"Day 60! Look back at how far you’ve come. Keep your plan, your supports and your daily habits going."];
+const C=[
+"Why I’m changing|Change starts with a clear reason. People who write down why they’re stopping {h} stay motivated longer.|What makes a reason for change strong?|It is personal and written down|It sounds impressive to others|It is someone else’s idea",
+"Tell someone|Secrets feed {h}. Telling one trusted person adds accountability and support.|Why tell a trusted person?|Accountability and support|To feel guilty|To avoid effort",
+"Remove the cues|Cues like apps, places and items trigger urges automatically. Out of sight weakens the pull.|Removing cues helps because…|Urges are set off by what you see and have nearby|Willpower never runs out|Cues don’t matter",
+"Track your urges|Writing down urges shows they come and go, and when they hit hardest.|What does logging urges reveal?|Patterns in timing and triggers|Nothing useful|That you should give in",
+"Breathe through it|Slow breathing with a long exhale calms the body’s alarm system.|Which breathing calms you best?|Slow, with a longer exhale|Fast and shallow|Holding it as long as possible",
+"Body basics|Hunger, thirst and tiredness make urges louder. Basic care protects you.|Why do meals, water and movement matter?|They make urges quieter and mood steadier|They don’t affect cravings|They replace therapy",
+"Solid Ground plan||||||",
+"Spot your triggers|Triggers are the people, places, feelings and times your brain links to {h}.|Which is a trigger?|Feeling stressed at a certain time of day|Drinking water|Eight hours of sleep",
+"Have a plan B|A ready alternative removes the need to decide in the middle of an urge.|Why make a plan B ahead of time?|Decisions are hardest mid-urge|It isn’t needed|It makes triggers stronger",
+"HALT check|Hungry, Angry, Lonely, Tired: these states make relapse likelier. Fix the need first.|If you’re tired and craving, what comes first?|Rest, then reassess|Push through|Give in once",
+"Break the routine|Habits live in routines. Changing one step weakens the chain.|Changing a route or time helps because…|It breaks the automatic habit chain|It makes you stronger overnight|It is only a distraction",
+"Surf the urge|An urge is a wave. It rises, peaks and falls, usually within 10–20 minutes.|What happens if you don’t act on an urge?|It peaks and fades|It grows forever|It gets stronger each time",
+"Honest accounting|Seeing what {h} gave you and what it cost makes your choice clearer.|Why list both benefits and costs?|Honesty strengthens your motivation|To feel ashamed|To excuse the habit",
+"Rest and reward|Recovery needs rest and joy, not only effort. Pleasant moments rebuild natural reward.|Why schedule enjoyable activities?|They retrain the brain to find reward elsewhere|They’re a waste of time|They cause cravings",
+"Sleep protects you|Poor sleep weakens self-control and raises cravings.|What does a regular bedtime do?|Improves mood and self-control|Nothing|Makes urges stronger",
+"Move your body|Exercise lifts mood chemicals and reduces cravings.|How does exercise help recovery?|Lifts mood and eases cravings|It only burns calories|It replaces sleep",
+"Fuel your brain|Solo Rehab meals keep blood sugar and mood stable.|Which helps steady cravings?|Regular balanced meals|Skipping meals|Lots of sugar and caffeine",
+"Body scan|Noticing tension without judging it teaches you to stay with sensations, including urges.|A body scan builds…|Awareness of sensations without reacting|Muscle strength|Instant relaxation only",
+"Daylight and nature|Daylight helps sleep and mood, and a short walk interrupts racing thoughts.|A daylight walk helps because…|It lifts mood and resets your body clock|It burns the urge away|It is required",
+"Tidy space, calm mind|Order in your space gives a sense of control.|Why tidy a space during recovery?|It builds a sense of control and calm|It is unrelated|It is a punishment",
+"Check your progress|Comparing today with Day 1 shows changes you may not feel day to day.|Why review your progress?|It reveals gains you’d otherwise miss|To find faults|It isn’t useful",
+"Talk back to thoughts|Thoughts like “just once” are not facts. You can answer them.|“Just once won’t hurt” is…|A thought you can challenge|A fact|An order",
+"Kinder self-talk|Harsh self-talk fuels shame, and shame fuels relapse.|Which self-talk helps recovery?|Firm but kind|Harsh and critical|Silent and numb",
+"Name the feeling|Naming a feeling lowers its intensity and the urge to escape it.|Naming emotions helps because…|It calms the brain’s alarm|It makes feelings bigger|It avoids them",
+"Play the movie forward|Picture what happens after the first slip, step by step to the end, not just the first moment.|Playing the movie forward shows…|The full consequences, not just the first rush|Only the pleasure|Nothing new",
+"Grounding|Using your senses brings you back to the present when urges or anxiety spike.|5-4-3-2-1 grounding uses…|Your five senses|Counting backward from 100|Holding your breath",
+"Self-compassion|People who treat themselves kindly recover from slips faster.|After a mistake, self-compassion…|Helps you restart sooner|Excuses everything|Is weakness",
+"Thinking traps|Common traps: all-or-nothing thinking, “I’ve already blown it,” and catastrophizing.|“I slipped, so it’s all ruined” is…|All-or-nothing thinking|Realistic|Helpful",
+"Replace, don’t just remove|Every habit meets a need. Give that need a healthy outlet.|A good replacement…|Meets the same need in a healthy way|Is another harmful habit|Is doing nothing",
+"Use your replacement|Practice the new habit in the exact moments you’d usually slip.|When should you use replacements?|During your highest-risk hours|Only when calm|Never",
+"Learn something new|New skills give pride and reward that compete with {h}.|Why learn a new skill?|It builds new sources of reward|It is only a hobby|It distracts forever",
+"Kindness lifts you|Helping others lifts your mood and sense of purpose.|Acts of kindness help recovery by…|Boosting purpose and mood|Making you tired|Replacing therapy",
+"Fill the gaps|Empty time is high-risk. A loose plan protects it.|Why plan your weekend?|Idle gaps invite relapse|To be busy for its own sake|It doesn’t matter",
+"Create something|Creating absorbs attention and builds an identity beyond {h}.|Creative activity helps because…|It absorbs your attention in a healthy way|It proves talent|It is required",
+"Healthy rewards|Rewards keep motivation going. Choose ones that don’t undo your progress.|A good reward is…|Healthy and meaningful to you|Linked to {h}|Skipped entirely",
+"Reach out|Isolation is a top relapse risk. Connection protects.|What is a major relapse risk?|Isolation|Phone calls|Having friends",
+"Find help nearby|Support groups and counselors add skills and understanding.|Why know your local help in advance?|You can reach it fast when needed|It is never needed|It replaces your effort",
+"Be honest about struggles|Sharing a struggle shrinks it.|Sharing a struggle with someone…|Reduces its weight|Makes it worse|Is pointless",
+"Set boundaries|Saying no to people and places that pull you back protects recovery.|A boundary is…|A limit that protects your progress|A fight|A punishment",
+"Say thank you|Gratitude strengthens relationships and mood.|Thanking supporters…|Strengthens your support network|Is unnecessary|Feels awkward and useless",
+"Choose your circle|The people around you shape your habits.|Spending time with people who don’t do {h}…|Makes change easier|Doesn’t matter|Is unrealistic",
+"Your support team|Know exactly who you’ll call before the urge strikes.|Why save supporters’ numbers?|You can act fast in a crisis|To impress people|It is unnecessary",
+"Count the cost|Seeing the real cost in money, time and energy makes change worth it.|Calculating the cost helps you…|See what you gain by stopping|Feel guilty|Justify the habit",
+"Plan the gains|Deciding what you’ll do with the savings makes them real.|Why plan what to do with saved money or time?|It gives you something to move toward|It is a distraction|It is unnecessary",
+"Set a goal|A clear goal gives recovery direction beyond avoiding {h}.|A good goal is…|Specific and meaningful|Vague|Impossible",
+"Small steps|Big goals work in small steps you can finish today.|Why break goals into steps?|They are easier to start and finish|They are slower|They are less important",
+"Know your values|Values like family, health and honesty guide choices when urges hit.|Values help recovery by…|Guiding decisions under pressure|Being rules to obey|Replacing support",
+"Do what you’ve avoided|Finishing avoided tasks builds confidence and frees energy.|Completing a dreaded task…|Builds confidence|Wastes time|Increases cravings",
+"How far you’ve come|Looking back shows real change and builds hope.|Why reflect on progress?|It builds confidence to continue|It promises you won’t slip|It is only for the end",
+"Warning signs|Relapse starts in thoughts and habits, not the act itself.|Which is an early warning sign?|Isolating and skipping routines|Sleeping well|Calling a friend",
+"After a slip|One slip isn’t failure. What you do next matters most.|After a slip, the best step is…|Tell someone and restart|Hide it|Give up",
+"Practice saying no|Rehearsing a clear refusal makes it easier under pressure.|Rehearsing “no thanks” helps because…|It becomes automatic when you need it|It is embarrassing|It isn’t needed",
+"Plan for risk|Predictable risks like paydays, parties and lonely weekends can be planned for.|Why plan for risky events?|You decide while calm|It creates worry|Risks can’t be planned",
+"Review your plan|Your plan should grow with you. Update it as you learn. You can edit it any time on the Me tab.|Why update your Solid Ground plan?|You’ve learned what works|It is finished forever|It is a punishment",
+"Picture success|Imagining yourself handling urges calmly builds confidence and readiness.|Visualizing success helps because…|It rehearses calm responses|It guarantees success|It replaces action",
+"Wins and risks|Naming your biggest win and biggest risk keeps you honest and encouraged.|Why name your biggest risk?|So you can plan for it|To feel anxious|It is unhelpful",
+"Letter to your future self|Writing to your future self clarifies who you’re becoming.|A letter to your future self…|Strengthens your vision|Predicts the future|Is just a task",
+"Plan to celebrate|Celebrating progress reinforces new habits.|Healthy celebration…|Reinforces your progress|Undermines it|Is vain",
+"Pass it on|Helping someone just starting out deepens your own recovery and purpose.|Helping someone starting out…|Reinforces your own recovery|Is a distraction|Isn’t needed",
+"You did it|Day 60 is a milestone, not a finish line. Recovery is a daily practice you now know how to do.|After 60 days, what keeps you steady?|Your plan, supports and daily habits|Nothing more is needed|Luck"];
+LS=C.map((r,i)=>{const f=r.split("|");if(i===6)return{t:f[0],e:"⛰️",plan:1};const o=[f[4],f[5]];o.splice(i%3,0,f[3]);return{t:f[0],e:"📘",idea:f[1],q:f[2],o:o,a:i%3}});
+/* Paystack: paste your Payment Page links (https://paystack.com/pay/...) below */
+const PAYSTACK={
+ plans:[
+  {name:"Support Solo Rehab",e:"💚",desc:"One-time gift of any amount. Helps keep recovery tools free for everyone.",link:""},
+  {name:"Solo Rehab Plus",e:"⭐",desc:"$9.90 per month after a 3-day free trial. Unlocks every lesson and the full 60-day program. Cancel anytime.",link:""}
+ ]};
+function pay(){
+ let h='<h2 style="font-size:1.3rem;margin:8px 0 4px">Support Solo Rehab</h2><p class="note">Payments are handled securely on Paystack’s own page. This app never sees your card or mobile money details.</p>';
+ PAYSTACK.plans.forEach(p=>{h+='<div class="card"><div style="font-size:2rem">'+p.e+'</div><h2>'+p.name+'</h2><p class="note">'+p.desc+'</p>'+
+  (p.link?'<a class="btn" style="display:block;text-align:center;text-decoration:none" target="_blank" rel="noopener noreferrer" href="'+p.link+'">Pay with Paystack</a>':'<button class="btn" disabled>Coming soon</button>')+'</div>'});
+ h+='<div class="card"><h2>Already subscribed?</h2><p class="note">Enter the access code from your Paystack receipt.</p><input type="text" id="code" placeholder="Access code"><br><br><button class="btn" id="ucode">Unlock</button><p id="umsg" class="note"></p></div>';
+ $("pay").innerHTML=h;
+ $("ucode").onclick=()=>{if($("code").value.trim().toUpperCase()===ACCESS_CODE){S.premium=true;save();tb();$("umsg").textContent="Unlocked. Thank you!"}else $("umsg").textContent="That code isn’t right."};
+}
+$("back").onclick=()=>{S.view="home";save();showTab("learn")};
+try{}catch(e){}
+/* website */
+(function(){
+const P=[[70,150,"#8d5524","#3aa876"],[330,150,"#e0ac69","#f2b632"],[120,215,"#c68642","#5b8def"],[280,215,"#5c3a21","#e86a5c"],[200,105,"#f1c27d","#9b6bd6"],[200,235,"#ffdbac","#0b756b"]];
+let a='<svg viewBox="0 0 400 300" width="100%" style="max-width:420px;display:block;margin:auto"><rect width="400" height="300" rx="24" fill="var(--card)" stroke="var(--line)" stroke-width="2"/><circle cx="200" cy="160" r="34" fill="var(--acc2)"/><text x="200" y="171" font-size="30" text-anchor="middle">💚</text>';
+P.slice().sort((p,q)=>p[1]-q[1]).forEach(p=>{a+='<ellipse cx="'+p[0]+'" cy="'+(p[1]+36)+'" rx="28" ry="32" fill="'+p[3]+'"/><circle cx="'+p[0]+'" cy="'+p[1]+'" r="17" fill="'+p[2]+'"/>'});
+$("art").innerHTML=a+'</svg>'})();
+let dip=null;addEventListener("beforeinstallprompt",e=>{e.preventDefault();dip=e});
+function md(h){$("mc").innerHTML=h;$("md").classList.remove("hide")}
+function mdx(){$("md").classList.add("hide")}
+function startApp(){mdx();document.body.classList.add("inapp");window.scrollTo(0,0)}
+function installApp(){if(dip){dip.prompt();dip=null;return}
+ md('<h3>Install Solo Rehab on your phone</h3><p><b>iPhone (Safari):</b> tap Share, then “Add to Home Screen”.</p><p><b>Android (Chrome):</b> tap the ⋮ menu, then “Install app” or “Add to Home screen”.</p><p class="note">It then opens full-screen like an app. Free, no store account needed.</p><button class="sbtn" id="mgo">Start in your browser</button>');$("mgo").onclick=startApp}
+function acct(t){let u={};try{u=JSON.parse(localStorage.getItem("steady-acct")||"{}")}catch(e){}
+ md('<h3>'+t+'</h3><input type="text" id="an" placeholder="First name" value="'+esc(u.name||"")+'"><br><br><input type="text" id="ae" placeholder="Email" value="'+esc(u.email||"")+'"><br><br><button class="sbtn" id="as">Save</button><p class="note" id="am">Saved on this device only. Online sync isn’t available yet.</p>');
+ $("as").onclick=()=>{const o={name:$("an").value.trim(),email:$("ae").value.trim()};if(!o.name){$("am").textContent="Please add your first name.";return}
+  try{localStorage.setItem("steady-acct",JSON.stringify(o))}catch(e){}
+  $("hAcct").textContent="Hi, "+o.name;$("am").textContent="Welcome, "+o.name+"! You’re all set."}}
+function info(k){md(k==="privacy"?'<h3>Privacy</h3><p>Solo Rehab keeps your progress, plan and any details you enter in your own browser or device. Nothing is sent to us.</p>':'<h3>Not medical advice</h3><p>Solo Rehab is a self-help tool. It does not diagnose or treat any condition. If you drink heavily, talk to a doctor before stopping suddenly, because withdrawal can be dangerous.</p>')}
+$("site").onclick=e=>{const t=e.target.closest("[data-go],[data-start],[data-dl],[data-acct],[data-info]");if(!t)return;e.preventDefault();
+ if(t.dataset.go){const el=$(t.dataset.go);if(el)el.scrollIntoView({behavior:"smooth"});$("mn").classList.remove("open")}
+ else if(t.hasAttribute("data-start"))startApp();else if(t.hasAttribute("data-dl"))installApp();
+ else if(t.dataset.acct)acct(t.dataset.acct);else if(t.dataset.info)info(t.dataset.info)};
+$("md").onclick=e=>{if(e.target.id==="md")mdx()};
+$("bg").onclick=()=>$("mn").classList.toggle("open");
+$("toSite").onclick=()=>{document.body.classList.remove("inapp");window.scrollTo(0,0)};
+if(location.hash==="#app"||(window.matchMedia&&matchMedia("(display-mode: standalone)").matches))document.body.classList.add("inapp");
+try{const u=JSON.parse(localStorage.getItem("steady-acct")||"{}");if(u.name)$("hAcct").textContent="Hi, "+u.name}catch(e){}
+/* reviews */
+const TL=[
+{n:"Sample · Amara",t:"Nicotine recovery",r:5,x:"The daily lessons are short enough that I actually do them. The urge-surfing exercise got me through a rough evening."},
+{n:"Sample · Daniel",t:"Alcohol recovery",r:5,x:"Seeing my free days grow and writing my Solid Ground plan made me feel like I had something steady under my feet."},
+{n:"Sample · Lerato",t:"Phone and gaming",r:4,x:"Simple, calm and not preachy. The breathing tool is my favorite when I want to scroll."},
+{n:"Sample · Joseph",t:"Gambling recovery",r:5,x:"Day 43, counting the real cost, changed how I saw everything. I wish I’d had this sooner."}];
+let REV=[],rv=5;try{REV=JSON.parse(localStorage.getItem("steady-rev")||"[]")}catch(e){}
+const stars=n=>"★".repeat(n)+"☆".repeat(5-n);
+function tls(){const all=TL.concat(REV),avg=all.reduce((s,x)=>s+x.r,0)/all.length;
+ $("avg").textContent=avg.toFixed(1);$("avs").textContent=stars(Math.round(avg));$("cnt").textContent=all.length+" reviews";
+ $("tl").innerHTML=all.map(x=>'<div class="card"><div class="stars">'+stars(x.r)+'</div><p>“'+esc(x.x)+'”</p><b>'+esc(x.n)+'</b><div class="note">'+esc(x.t)+'</div></div>').join("")}
+function rst(){$("rst").innerHTML="";for(let i=1;i<=5;i++){const b=document.createElement("button");b.style.cssText="border:0;background:none;color:inherit;font-size:inherit;cursor:pointer";b.textContent=i<=rv?"★":"☆";b.onclick=()=>{rv=i;rst()};$("rst").appendChild(b)}}
+$("rsub").onclick=()=>{const x=$("rt").value.trim();if(!x)return;REV.push({n:$("rn").value.trim()||"Anonymous",t:"Your review",r:rv,x:x});try{localStorage.setItem("steady-rev",JSON.stringify(REV))}catch(e){}$("rt").value="";tls()};
+rst();tls();
+/* footer search */
+const TOP=[["Features and lessons","s-features"],["60-day program","s-features"],["Urge rescue tools","s-features"],["Breathing and grounding","s-features"],["How it works","s-how"],["Reviews and ratings","s-stories"],["Download the app","s-download"],["Is it free?","s-faq"],["Privacy","s-faq"],["Help and crisis support","s-help"]];
+$("fs").oninput=e=>{const q=e.target.value.trim().toLowerCase(),u=$("fr");u.innerHTML="";if(q.length<2)return;
+ const m=TOP.concat(C.map(r=>["Lesson: "+r.split("|")[0],"s-features"])).filter(x=>x[0].toLowerCase().includes(q)).slice(0,6);
+ if(!m.length){u.innerHTML="<li>No matches</li>";return}
+ m.forEach(x=>{const li=document.createElement("li");li.textContent=x[0];li.onclick=()=>{$(x[1]).scrollIntoView({behavior:"smooth"});u.innerHTML=""};u.appendChild(li)})};
+
+if(!PAYWALL){const pb=document.querySelector('[data-t="pay"]');if(pb)pb.remove()}
+save();showTab("learn");
+</script>
+</body>
+</html>
